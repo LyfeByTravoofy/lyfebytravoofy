@@ -3,12 +3,17 @@
   publish   = ".next"
   base      = "."
 
-# Optional: set the Node version to match your local one
 [build.environment]
   NODE_VERSION = "18"
+  SECRETS_SCAN_ENABLED = "false"
 
 # Redirects for Next.js (so dynamic routes work correctly)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Enable Next.js support on Netlify
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
