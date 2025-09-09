@@ -55,7 +55,7 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
+// import Image from 'next/image'
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -67,7 +67,7 @@ export default function Navbar() {
           {/* Logo on the left */}
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <Image
+              <img
                 src="/logo.png" // Make sure this matches your logo file name in public folder
                 alt="Lyfe Travels Logo"
                 width={120}
@@ -91,7 +91,7 @@ export default function Navbar() {
               className="bg-[#1DBF73] text-white px-4 py-2 rounded-md hover:bg-[#17a564] transition flex items-center space-x-2"
             >
               <span>Say hello on WhatsApp</span>
-              <Image
+              <img
                 src="/arrowup.png" // Make sure this matches your WhatsApp icon file name
                 alt="WhatsApp"
                 width={20}

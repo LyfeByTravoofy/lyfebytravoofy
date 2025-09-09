@@ -1,4 +1,4 @@
-import Image from 'next/image'
+// import Image from 'next/image'
 
 export default function TailoredPackage() {
   return (
@@ -26,7 +26,7 @@ export default function TailoredPackage() {
               className="bg-[#1DBF73] text-white px-6 py-3 rounded-md hover:bg-[#17a564] transition flex items-center space-x-2"
             >
               <span>Say hello on WhatsApp</span>
-              <Image
+              <img
                 src="/arrowup.png" // Make sure this matches your arrow icon file name
                 alt="WhatsApp"
                 width={20}
