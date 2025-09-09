@@ -1,0 +1,14 @@
+[build]
+  command   = "yarn build"
+  publish   = ".next"
+  base      = "."
+
+# Optional: set the Node version to match your local one
+[build.environment]
+  NODE_VERSION = "18"
+
+# Redirects for Next.js (so dynamic routes work correctly)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
