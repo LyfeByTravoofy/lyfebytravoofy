@@ -105,7 +105,7 @@
 
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
-// import PackageSales from '../components/PackageSales'
+import PackageSales from '../components/PackageSales'
 import AIAssistant from '../components/AIAssistant'
 // import Testimonials from '../components/Testimonials'
 import TailoredPackage from '../components/TailoredPackage' // Import the new component
@@ -119,7 +119,7 @@ export default function Home() {
       <Hero />
       <AIAssistant />
       <TailoredPackage />
-      {/* <PackageSales /> */}
+      <PackageSales />
       {/* <Testimonials /> */}
       <StayUpdated />
       <Footer />
