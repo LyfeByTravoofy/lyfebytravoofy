@@ -96,10 +96,10 @@ export default function AIAssistant() {
           <h2 className="text-3xl md:text-4xl font-dynapuff text-white mb-4">
             Get Your Travel Budget Estimate
           </h2>
-          <p className="text-xl text-white">
-            Chat with our AI assistant to get personalized budget estimates for your dream <br />
-            destinations. Ask about costs, best times to visit, and money-saving tips.
-          </p>
+            <p className="text-lg md:text-xl text-white max-w-4xl mx-auto">
+              Chat with our AI assistant to get personalized budget estimates for your dream destinations. 
+              Ask about costs, best times to visit, and money-saving tips.
+            </p>
         </div>
 
         {/* Chat Interface Container - 90% width */}
