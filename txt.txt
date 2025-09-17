@@ -1,0 +1,15 @@
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: "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",
+});
+
+const response = openai.responses.create({
+  model: "gpt-5-nano",
+  input: "write a haiku about ai",
+  store: true,
+});
+
+response.then((result) => console.log(result.output_text));
+
+SmartTech-1
