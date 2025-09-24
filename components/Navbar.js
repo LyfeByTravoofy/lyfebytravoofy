@@ -85,7 +85,7 @@ export default function Navbar() {
           {/* WhatsApp button on the right - hidden on mobile */}
           <div className="hidden md:flex items-center">
             <a 
-              href="https://wa.me/yournumber" // Replace with your actual WhatsApp number
+              href="https://wa.me/2347014952315" // Replace with your actual WhatsApp number
               target="_blank"
               rel="noopener noreferrer"
               className="bg-[#1DBF73] text-white px-4 py-2 rounded-md hover:bg-[#17a564] transition flex items-center space-x-2"
@@ -122,7 +122,7 @@ export default function Navbar() {
         <div className="md:hidden bg-white shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <a 
-              href="https://wa.me/yournumber" 
+              href="https://wa.me/2347014952315" 
               target="_blank"
               rel="noopener noreferrer"
               className="block px-3 py-2 bg-[#1DBF73] text-white rounded mx-2 text-center"

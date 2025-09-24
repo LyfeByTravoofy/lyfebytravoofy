@@ -97,3 +97,9 @@ body {
   font-family: 'DynaPuff', cursive;
   font-weight: 400;
 }
+
+/* In your Tailwind config or CSS */
+.chat-message {
+  line-height: 1.5;
+  word-wrap: break-word;
+}

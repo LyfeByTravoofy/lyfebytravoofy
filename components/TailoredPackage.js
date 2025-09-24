@@ -65,7 +65,7 @@ export default function TailoredPackage() {
           {/* WhatsApp button - centered on mobile, left on desktop */}
           <div className="flex justify-center md:justify-start">
             <a 
-              href="https://wa.me/yournumber" // Replace with your actual WhatsApp number
+              href="https://wa.me/2347014952315" // Replace with your actual WhatsApp number
               target="_blank"
               rel="noopener noreferrer"
               className="bg-[#1DBF73] text-white px-6 py-3 rounded-md hover:bg-[#17a564] transition flex items-center space-x-2"

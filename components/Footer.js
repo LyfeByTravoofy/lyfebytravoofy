@@ -60,13 +60,13 @@ export default function Footer() {
 
               {/* Social media icons */}
               <div className="flex space-x-4 mt-6 md:justify-start">
-                <a href="#" className="text-gray-600 hover:text-[#FFBF4C] transition">
+                <a href="https://www.facebook.com/travoofy" className="text-gray-600 hover:text-[#FFBF4C] transition">
                   <img src="/Facebook.png" alt="Facebook" className="w-6 h-6" />
                 </a>
-                <a href="#" className="text-gray-600 hover:text-[#FFBF4C] transition">
+                <a href="https://x.com/travoofy" className="text-gray-600 hover:text-[#FFBF4C] transition">
                   <img src="/Twitter.png" alt="Twitter" className="w-6 h-6" />
                 </a>
-                <a href="#" className="text-gray-600 hover:text-[#FFBF4C] transition">
+                <a href="https://www.instagram.com/lyfebytravoofy?igsh=amd1em83dTVxaXNp&utm_source=qr" className="text-gray-600 hover:text-[#FFBF4C] transition">
                   <img src="/Instagram.png" alt="Instagram" className="w-6 h-6" />
                 </a>
                 <a href="#" className="text-gray-600 hover:text-[#FFBF4C] transition">
