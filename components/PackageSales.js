@@ -1562,7 +1562,7 @@ export default function PackageSales() {
                             <li className="text-sm text-gray-600">
                               <button 
                                 onClick={() => showAllInclusions(pkg)}
-                                className="text-blue-600 hover:text-gray-800 underline"
+                                className="text-gray-600 hover:text-gray-800"
                               >
                                 +{pkg.inclusions.length - 3} more inclusions
                               </button>
