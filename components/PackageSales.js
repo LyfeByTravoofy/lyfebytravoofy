@@ -1562,7 +1562,7 @@ export default function PackageSales() {
                             <li className="text-sm text-gray-600">
                               <button 
                                 onClick={() => showAllInclusions(pkg)}
-                                className="text-blue-600 hover:text-blue-800 underline"
+                                className="text-blue-600 hover:text-gray-800 underline"
                               >
                                 +{pkg.inclusions.length - 3} more inclusions
                               </button>
@@ -1574,14 +1574,28 @@ export default function PackageSales() {
 
                     {/* Book Now button - Fixed at bottom */}
                     <div className="mt-auto pt-4">
-                      <button className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center space-x-2">
+                      {/* <button className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center space-x-2">
                         <span>Book Now</span>
                         <img 
                           src="/arrowup.png" 
                           alt="Arrow up" 
                           className="w-5 h-5"
                         />
-                      </button>
+                      </button> */}
+
+                      <a 
+                          href={`https://wa.me/2347014952315?text=${encodeURIComponent('Hello! I would like to book the ' + pkg.name + ' package.')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center space-x-2"
+                        >
+                          <span>Book Now</span>
+                          <img 
+                            src="/arrowup.png" 
+                            alt="Arrow up" 
+                            className="w-5 h-5"
+                          />
+                        </a>
                     </div>
                   </div>
                 </div>
@@ -1605,7 +1619,7 @@ export default function PackageSales() {
             {process.env.NODE_ENV === 'development' && (
               <button
                 onClick={restartAutoScroll}
-                className="absolute top-0 right-0 bg-blue-500 text-white px-2 py-1 rounded text-xs"
+                className="absolute top-0 right-0 bg-transparent text-transparent px-2 py-1 rounded text-xs hover:bg-gray-200 hover:text-gray-600 transition-colors"
               >
                 {/* Restart Scroll */}
               </button>
@@ -1694,14 +1708,27 @@ export default function PackageSales() {
                   </ul>
                 </div>
 
-                <button className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center space-x-2">
+                {/* <button className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center space-x-2">
                   <span>Book Now</span>
                   <img 
                     src="/arrowup.png" 
                     alt="Arrow up" 
                     className="w-5 h-5"
                   />
-                </button>
+                </button> */}
+              <a 
+                href={`https://wa.me/2347014952315?text=${encodeURIComponent('Hello! I would like to book the ' + pkg.name + ' package.')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center space-x-2"
+              >
+                <span>Book Now</span>
+                <img 
+                  src="/arrowup.png" 
+                  alt="Arrow up" 
+                  className="w-5 h-5"
+                />
+              </a>
               </div>
             </div>
           </div>
