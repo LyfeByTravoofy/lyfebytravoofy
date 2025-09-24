@@ -1607,7 +1607,7 @@ export default function PackageSales() {
                 onClick={restartAutoScroll}
                 className="absolute top-0 right-0 bg-blue-500 text-white px-2 py-1 rounded text-xs"
               >
-                Restart Scroll
+                {/* Restart Scroll */}
               </button>
             )}
           </div>
