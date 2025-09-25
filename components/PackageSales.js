@@ -1717,7 +1717,7 @@ export default function PackageSales() {
                   />
                 </button> */}
               <a 
-                href={`https://wa.me/2347014952315?text=${encodeURIComponent('Hello! I would like to book the ' + pkg.name + ' package.')}`}
+                href={`https://wa.me/2347014952315?text=${encodeURIComponent('Hello! I would like to book the ' + selectedPackage.name + ' package.')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center space-x-2"
