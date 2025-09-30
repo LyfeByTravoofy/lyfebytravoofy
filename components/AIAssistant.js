@@ -675,6 +675,338 @@
 //   )
 // }
 
+// 'use client'
+
+// import { useState, useEffect, useRef, useCallback } from 'react'
+// import ReactMarkdown from 'react-markdown'
+
+// export default function AIAssistant() {
+//   const [message, setMessage] = useState('')
+//   const [conversation, setConversation] = useState([])
+//   const [isLoading, setIsLoading] = useState(false)
+//   const [isChatOpen, setIsChatOpen] = useState(false)
+  
+//   // Refs
+//   const messagesEndRef = useRef(null)
+//   const messagesContainerRef = useRef(null)
+
+//   // Bulletproof scroll to bottom function
+//   const scrollToBottom = useCallback(() => {
+//     if (messagesContainerRef.current) {
+//       const container = messagesContainerRef.current
+//       // Use multiple methods to ensure it works
+//       setTimeout(() => {
+//         container.scrollTop = container.scrollHeight
+        
+//         // Alternative method if first doesn't work
+//         setTimeout(() => {
+//           if (container.scrollTop + container.clientHeight < container.scrollHeight - 10) {
+//             container.scrollTop = container.scrollHeight
+//           }
+//         }, 50)
+//       }, 100)
+//     }
+//   }, [])
+
+//   // Auto-scroll when conversation changes
+//   useEffect(() => {
+//     if (conversation.length > 0) {
+//       scrollToBottom()
+//     }
+//   }, [conversation, scrollToBottom])
+
+//   // Scroll when loading state changes
+//   useEffect(() => {
+//     if (isLoading) {
+//       scrollToBottom()
+//     }
+//   }, [isLoading, scrollToBottom])
+
+//   // Scroll when modal opens
+//   useEffect(() => {
+//     if (isChatOpen) {
+//       setTimeout(() => {
+//         scrollToBottom()
+//       }, 300)
+//     }
+//   }, [isChatOpen, scrollToBottom])
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault()
+//     if (!message.trim()) return
+
+//     setIsLoading(true)
+//     const userMessage = message
+//     const userTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    
+//     const updatedConversation = [...conversation, { 
+//       role: 'user', 
+//       content: userMessage,
+//       timestamp: userTimestamp
+//     }]
+    
+//     setConversation(updatedConversation)
+//     setMessage('')
+
+//     try {
+//       const response = await fetch('/api/ai-assistant', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ 
+//           message: userMessage,
+//           conversation: updatedConversation
+//         }),
+//       })
+
+//       if (!response.ok) {
+//         throw new Error('Failed to get response')
+//       }
+
+//       const data = await response.json()
+//       const aiTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      
+//       setConversation((prev) => [...prev, { 
+//         role: 'assistant', 
+//         content: data.response,
+//         timestamp: aiTimestamp
+//       }])
+//     } catch (error) {
+//       console.error('Error:', error)
+//       const errorTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      
+//       setConversation((prev) => [
+//         ...prev,
+//         {
+//           role: 'assistant',
+//           content: 'Sorry, I encountered an error. Please try again.',
+//           timestamp: errorTimestamp
+//         },
+//       ])
+//     } finally {
+//       setIsLoading(false)
+//     }
+//   }
+
+//   // Force scroll when input is focused (for mobile keyboard)
+//   const handleInputFocus = () => {
+//     setTimeout(scrollToBottom, 500)
+//   }
+
+//   // Manual scroll button as fallback
+//   const handleManualScroll = () => {
+//     scrollToBottom()
+//   }
+
+//   // Custom components for ReactMarkdown
+//   const markdownComponents = {
+//     p: ({node, ...props}) => <p className="mb-2 leading-relaxed" {...props} />,
+//     strong: ({node, ...props}) => <strong className="font-bold text-gray-900" {...props} />,
+//     em: ({node, ...props}) => <em className="italic" {...props} />,
+//     ul: ({node, ...props}) => <ul className="list-disc list-inside mb-3 space-y-1" {...props} />,
+//     ol: ({node, ...props}) => <ol className="list-decimal list-inside mb-3 space-y-1" {...props} />,
+//     li: ({node, ...props}) => <li className="ml-2" {...props} />,
+//     h1: ({node, ...props}) => <h1 className="text-lg font-bold mb-3 text-gray-900" {...props} />,
+//     h2: ({node, ...props}) => <h2 className="text-md font-bold mb-2 text-gray-900" {...props} />,
+//     h3: ({node, ...props}) => <h3 className="text-base font-bold mb-2 text-gray-900" {...props} />,
+//     blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-gray-300 pl-3 my-2 text-gray-600" {...props} />,
+//     hr: ({node, ...props}) => <hr className="my-3 border-gray-200" {...props} />,
+//   }
+
+//   return (
+//     <>
+//       {/* Mobile & Tablet Chat Popup Overlay */}
+//       {isChatOpen && (
+//         <div 
+//           className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 lg:hidden"
+//           onClick={() => setIsChatOpen(false)}
+//         >
+//           <div 
+//             className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[90vh] flex flex-col"
+//             onClick={(e) => e.stopPropagation()}
+//           >
+//             {/* Close button */}
+//             <button 
+//               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-20 bg-white rounded-full p-1 shadow-lg"
+//               onClick={() => setIsChatOpen(false)}
+//             >
+//               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+//               </svg>
+//             </button>
+
+//             {/* Manual scroll button as fallback */}
+//             {conversation.length > 2 && (
+//               <button
+//                 onClick={handleManualScroll}
+//                 className="absolute top-4 left-4 text-gray-500 hover:text-gray-700 z-20 bg-white rounded-full p-1 shadow-lg"
+//                 title="Scroll to bottom"
+//               >
+//                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+//                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+//                 </svg>
+//               </button>
+//             )}
+            
+//             {/* Chat Interface */}
+//             <div className="h-full flex flex-col">
+//               {/* Header */}
+//               <div className="p-4 border-b border-gray-200 flex-shrink-0">
+//                 <div className="flex items-center space-x-3">
+//                   <img 
+//                     src="/Planet.png" 
+//                     alt="AI Assistant" 
+//                     className="w-8 h-8 rounded-full"
+//                   />
+//                   <div>
+//                     <h2 className="font-bold text-gray-900 text-[12px]">Travel Budget AI Assistant</h2>
+//                     <p className="text-gray-500 text-[11px]">Ask me about travel costs for any destination worldwide</p>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               {/* Chat Messages Area */}
+//               <div 
+//                 ref={messagesContainerRef}
+//                 className="flex-1 overflow-y-auto p-4"
+//                 style={{ 
+//                   WebkitOverflowScrolling: 'touch',
+//                 }}
+//               >
+//                 {conversation.length === 0 ? (
+//                   <div className="text-center py-8">
+//                     <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+//                       <img 
+//                         src="/ai-assistant-icon.png" 
+//                         alt="AI Assistant" 
+//                         className="w-6 h-6"
+//                       />
+//                     </div>
+//                     <p className="text-gray-600 text-[12px]">
+//                       Hi there! I'm your AI travel assistant. How can I help you plan your next adventure?
+//                     </p>
+//                   </div>
+//                 ) : (
+//                   <div className="space-y-4">
+//                     {conversation.map((msg, index) => (
+//                       <div key={index} className={`${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
+//                         <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} items-start`}>
+//                           {msg.role === 'assistant' && (
+//                             <img 
+//                               src="/ai-assistant-icon.png" 
+//                               alt="AI Assistant" 
+//                               className="w-6 h-6 rounded-full mt-1 mr-2 flex-shrink-0"
+//                             />
+//                           )}
+                          
+//                           <div className={`max-w-[80%] ${msg.role === 'user' ? 'bg-[#030213]' : 'bg-gray-100'} rounded-lg p-3`}>
+//                             <div className={`text-[12px] ${msg.role === 'user' ? 'text-white' : 'text-gray-900'}`}>
+//                               {msg.role === 'assistant' ? (
+//                                 <ReactMarkdown components={markdownComponents}>
+//                                   {msg.content}
+//                                 </ReactMarkdown>
+//                               ) : (
+//                                 <div className="whitespace-pre-wrap">{msg.content}</div>
+//                               )}
+//                             </div>
+//                           </div>
+
+//                           {msg.role === 'user' && (
+//                             <img 
+//                               src="/user-profile-icon.png" 
+//                               alt="User" 
+//                               className="w-6 h-6 rounded-full mt-1 ml-2 flex-shrink-0"
+//                             />
+//                           )}
+//                         </div>
+                        
+//                         <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} mt-1`}>
+//                           {msg.role === 'assistant' && (
+//                             <div className="w-6 h-6 mr-2 flex-shrink-0"></div> 
+//                           )}
+                          
+//                           <div className="max-w-[80%]">
+//                             <p className={`text-[10px] ${msg.role === 'user' ? 'text-gray-400' : 'text-gray-500'}`}>
+//                               {msg.timestamp}
+//                             </p>
+//                           </div>
+
+//                           {msg.role === 'user' && (
+//                             <div className="w-6 h-6 ml-2 flex-shrink-0"></div> 
+//                           )}
+//                         </div>
+//                       </div>
+//                     ))}
+//                   </div>
+//                 )}
+
+//                 {isLoading && (
+//                   <div className="text-left mt-4">
+//                     <div className="flex justify-start items-start">
+//                       <img 
+//                         src="/ai-assistant-icon.png" 
+//                         alt="AI Assistant" 
+//                         className="w-6 h-6 rounded-full mt-1 mr-2 flex-shrink-0"
+//                       />
+//                       <div className="max-w-[80%] bg-gray-100 rounded-lg p-3">
+//                         <div className="flex space-x-1">
+//                           <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+//                           <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+//                           <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+//                         </div>
+//                       </div>
+//                     </div>
+                    
+//                     <div className="flex justify-start mt-1">
+//                       <div className="w-6 h-6 mr-2 flex-shrink-0"></div>
+//                       <div className="max-w-[80%]">
+//                         <p className="text-[10px] text-gray-500">
+//                           {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+//                         </p>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 )}
+                
+//                 {/* Scroll anchor */}
+//                 <div ref={messagesEndRef} />
+//               </div>
+
+//               {/* Input Area */}
+//               <div className="p-4 border-t border-gray-200 flex-shrink-0 bg-white">
+//                 <form onSubmit={handleSubmit} className="flex items-center space-x-2">
+//                   <input
+//                     type="text"
+//                     value={message}
+//                     onChange={(e) => setMessage(e.target.value)}
+//                     onFocus={handleInputFocus}
+//                     className="flex-1 bg-gray-100 rounded-lg px-3 py-2 text-[12px] border-none focus:ring-0 focus:outline-none"
+//                     placeholder="Ask about travel cost for any destination..."
+//                     disabled={isLoading}
+//                   />
+//                   <button
+//                     type="submit"
+//                     disabled={isLoading || !message.trim()}
+//                     className="bg-[#818089] text-white rounded-lg p-2 hover:bg-[#9E9E9E] disabled:opacity-50 disabled:cursor-not-allowed transition flex-shrink-0"
+//                   >
+//                     <img 
+//                       src="/send-icon.png" 
+//                       alt="Send" 
+//                       className="w-4 h-4"
+//                     />
+//                   </button>
+//                 </form>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+
+
+
+
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
@@ -687,35 +1019,30 @@ export default function AIAssistant() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
   
-  // Refs for scrolling
+  // Refs
   const messagesEndRef = useRef(null)
   const messagesContainerRef = useRef(null)
   const inputRef = useRef(null)
 
-  // Auto-scroll to bottom when conversation changes
+  // Auto-scroll when conversation or loading changes
   useEffect(() => {
     scrollToBottom()
   }, [conversation, isLoading, isChatOpen])
 
-  // Handle keyboard visibility for mobile
+  // Handle keyboard open/close for mobile
   useEffect(() => {
     const handleResize = () => {
-      // Check if keyboard is likely open (window height reduced significantly)
       const isKeyboardOpen = window.visualViewport?.height < window.screen.height * 0.7
       setIsKeyboardVisible(isKeyboardOpen)
-      
       if (isKeyboardOpen) {
-        // Scroll to bottom when keyboard opens to keep input visible
-        setTimeout(scrollToBottom, 100)
+        setTimeout(scrollToBottom, 150)
       }
     }
 
-    // Listen for visual viewport changes (mobile keyboard)
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', handleResize)
     }
 
-    // Listen for focus events on input
     const input = inputRef.current
     if (input) {
       input.addEventListener('focus', () => setIsKeyboardVisible(true))
@@ -734,13 +1061,12 @@ export default function AIAssistant() {
   }, [isChatOpen])
 
   const scrollToBottom = () => {
-    // Use setTimeout to ensure DOM is updated
     setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'end'
-      })
-    }, 100)
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTop =
+          messagesContainerRef.current.scrollHeight
+      }
+    }, 50)
   }
 
   const handleSubmit = async (e) => {
@@ -763,18 +1089,11 @@ export default function AIAssistant() {
     try {
       const response = await fetch('/api/ai-assistant', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          message: userMessage,
-          conversation: updatedConversation
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userMessage, conversation: updatedConversation }),
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to get response')
-      }
+      if (!response.ok) throw new Error('Failed to get response')
 
       const data = await response.json()
       const aiTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -801,7 +1120,6 @@ export default function AIAssistant() {
     }
   }
 
-  // Custom components for ReactMarkdown to style the content
   const markdownComponents = {
     p: ({node, ...props}) => <p className="mb-2 leading-relaxed" {...props} />,
     strong: ({node, ...props}) => <strong className="font-bold text-gray-900" {...props} />,
@@ -825,9 +1143,8 @@ export default function AIAssistant() {
           onClick={() => setIsChatOpen(false)}
         >
           <div 
-            className={`absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-4 transition-all duration-300 ${
-              isKeyboardVisible ? 'max-h-[95vh]' : 'max-h-[85vh]'
-            } flex flex-col`}
+            className={`absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-4 transition-all duration-300 
+              ${isKeyboardVisible ? 'h-[95vh]' : 'h-[85vh]'} flex flex-col`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
@@ -835,21 +1152,19 @@ export default function AIAssistant() {
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10"
               onClick={() => setIsChatOpen(false)}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" 
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
             
             {/* Chat Interface */}
             <div className="h-full flex flex-col">
-              {/* Header with divider */}
+              {/* Header */}
               <div className="p-4 border-b border-gray-200 flex-shrink-0">
                 <div className="flex items-center space-x-3">
-                  <img 
-                    src="/Planet.png" 
-                    alt="AI Assistant" 
-                    className="w-8 h-8 rounded-full"
-                  />
+                  <img src="/Planet.png" alt="AI Assistant" className="w-8 h-8 rounded-full"/>
                   <div>
                     <h2 className="font-bold text-gray-900 text-[12px]">Travel Budget AI Assistant</h2>
                     <p className="text-gray-500 text-[11px]">Ask me about travel costs for any destination worldwide</p>
@@ -857,23 +1172,16 @@ export default function AIAssistant() {
                 </div>
               </div>
 
-              {/* Chat Messages Area with divider */}
+              {/* Chat Messages */}
               <div 
                 ref={messagesContainerRef}
                 className="flex-1 overflow-y-auto p-4 border-b border-gray-200 min-h-0"
-                style={{ 
-                  WebkitOverflowScrolling: 'touch',
-                  scrollBehavior: 'smooth'
-                }}
+                style={{ WebkitOverflowScrolling: 'touch', scrollBehavior: 'smooth' }}
               >
                 {conversation.length === 0 ? (
                   <div className="text-center py-8">
                     <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <img 
-                        src="/ai-assistant-icon.png" 
-                        alt="AI Assistant" 
-                        className="w-6 h-6"
-                      />
+                      <img src="/ai-assistant-icon.png" alt="AI Assistant" className="w-6 h-6"/>
                     </div>
                     <p className="text-gray-600 text-[12px]">
                       Hi there! I'm your AI travel assistant. How can I help you plan your next adventure?
@@ -885,14 +1193,9 @@ export default function AIAssistant() {
                       <div key={index} className={`mb-4 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
                         <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                           {msg.role === 'assistant' && (
-                            <img 
-                              src="/ai-assistant-icon.png" 
-                              alt="AI Assistant" 
-                              className="w-6 h-6 rounded-full mt-1 mr-2 flex-shrink-0"
-                            />
+                            <img src="/ai-assistant-icon.png" alt="AI Assistant" 
+                              className="w-6 h-6 rounded-full mt-1 mr-2 flex-shrink-0"/>
                           )}
-                          
-                          {/* Chat message bubble with ReactMarkdown */}
                           <div className={`max-w-[75%] ${msg.role === 'user' ? 'bg-[#030213]' : 'bg-gray-100'} rounded-lg p-3`}>
                             <div className={`text-[12px] ${msg.role === 'user' ? 'text-white' : 'text-gray-900'}`}>
                               {msg.role === 'assistant' ? (
@@ -904,45 +1207,29 @@ export default function AIAssistant() {
                               )}
                             </div>
                           </div>
-
                           {msg.role === 'user' && (
-                            <img 
-                              src="/user-profile-icon.png" 
-                              alt="User" 
-                              className="w-6 h-6 rounded-full mt-1 ml-2 flex-shrink-0"
-                            />
+                            <img src="/user-profile-icon.png" alt="User" 
+                              className="w-6 h-6 rounded-full mt-1 ml-2 flex-shrink-0"/>
                           )}
                         </div>
-                        
-                        {/* Timestamp */}
                         <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} mt-1`}>
-                          {msg.role === 'assistant' && (
-                            <div className="w-6 h-6 mr-2 flex-shrink-0"></div> 
-                          )}
-                          
+                          {msg.role === 'assistant' && <div className="w-6 h-6 mr-2 flex-shrink-0"></div>}
                           <div className="max-w-[75%]">
                             <p className={`text-[10px] ${msg.role === 'user' ? 'text-gray-400' : 'text-gray-500'}`}>
                               {msg.timestamp}
                             </p>
                           </div>
-
-                          {msg.role === 'user' && (
-                            <div className="w-6 h-6 ml-2 flex-shrink-0"></div> 
-                          )}
+                          {msg.role === 'user' && <div className="w-6 h-6 ml-2 flex-shrink-0"></div>}
                         </div>
                       </div>
                     ))}
                   </>
                 )}
-
                 {isLoading && (
                   <div className="mb-4 text-left">
                     <div className="flex justify-start">
-                      <img 
-                        src="/ai-assistant-icon.png" 
-                        alt="AI Assistant" 
-                        className="w-6 h-6 rounded-full mt-1 mr-2 flex-shrink-0"
-                      />
+                      <img src="/ai-assistant-icon.png" alt="AI Assistant" 
+                        className="w-6 h-6 rounded-full mt-1 mr-2 flex-shrink-0"/>
                       <div className="max-w-[75%] bg-gray-100 rounded-lg p-3">
                         <div className="flex space-x-1">
                           <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
@@ -951,8 +1238,6 @@ export default function AIAssistant() {
                         </div>
                       </div>
                     </div>
-                    
-                    {/* Loading timestamp */}
                     <div className="flex justify-start mt-1">
                       <div className="w-6 h-6 mr-2 flex-shrink-0"></div>
                       <div className="max-w-[75%]">
@@ -963,13 +1248,11 @@ export default function AIAssistant() {
                     </div>
                   </div>
                 )}
-                
-                {/* Invisible element to scroll to */}
-                <div ref={messagesEndRef} style={{ float: 'left', clear: 'both' }} />
+                <div ref={messagesEndRef} />
               </div>
 
-              {/* Input Area - Always visible above keyboard */}
-              <div className="p-4 flex-shrink-0 bg-white">
+              {/* Input Area (sticky) */}
+              <div className="p-4 bg-white sticky bottom-0">
                 <form onSubmit={handleSubmit} className="flex items-center space-x-2">
                   <input
                     ref={inputRef}
@@ -985,11 +1268,7 @@ export default function AIAssistant() {
                     disabled={isLoading || !message.trim()}
                     className="bg-[#818089] text-white rounded-lg p-2 hover:bg-[#9E9E9E] disabled:opacity-50 disabled:cursor-not-allowed transition"
                   >
-                    <img 
-                      src="/send-icon.png" 
-                      alt="Send" 
-                      className="w-4 h-4"
-                    />
+                    <img src="/send-icon.png" alt="Send" className="w-4 h-4"/>
                   </button>
                 </form>
               </div>
@@ -997,6 +1276,7 @@ export default function AIAssistant() {
           </div>
         </div>
       )}
+
 
       {/* Main Section */}
       <section id="ai-assistant" className="py-16 bg-[#FF643B] relative overflow-hidden">
