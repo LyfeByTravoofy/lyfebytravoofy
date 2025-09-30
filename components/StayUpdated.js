@@ -16,9 +16,16 @@ export default function StayUpdated() {
     <section id="contact" className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
-          <h2 className="text-4xl md:text-5xl font-dynapuff mb-4 text-black">
+          {/* Mobile & Tablet Header */}
+          <h2 className="text-4xl font-dynapuff mb-4 text-black lg:hidden">
             Stay Updated with Travel Deals
           </h2>
+          
+          {/* Desktop Header */}
+          <h2 className="text-5xl font-dynapuff mb-4 text-black hidden lg:block">
+            Stay Updated with Travel Deals
+          </h2>
+          
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Get the latest budget travel tips, destination guides, and exclusive deals delivered straight to your inbox.
           </p>

@@ -675,12 +675,9 @@
 //   )
 // }
 
-
-
-
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
 
 export default function AIAssistant() {
@@ -688,6 +685,63 @@ export default function AIAssistant() {
   const [conversation, setConversation] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [isChatOpen, setIsChatOpen] = useState(false)
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
+  
+  // Refs for scrolling
+  const messagesEndRef = useRef(null)
+  const messagesContainerRef = useRef(null)
+  const inputRef = useRef(null)
+
+  // Auto-scroll to bottom when conversation changes
+  useEffect(() => {
+    scrollToBottom()
+  }, [conversation, isLoading, isChatOpen])
+
+  // Handle keyboard visibility for mobile
+  useEffect(() => {
+    const handleResize = () => {
+      // Check if keyboard is likely open (window height reduced significantly)
+      const isKeyboardOpen = window.visualViewport?.height < window.screen.height * 0.7
+      setIsKeyboardVisible(isKeyboardOpen)
+      
+      if (isKeyboardOpen) {
+        // Scroll to bottom when keyboard opens to keep input visible
+        setTimeout(scrollToBottom, 100)
+      }
+    }
+
+    // Listen for visual viewport changes (mobile keyboard)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleResize)
+    }
+
+    // Listen for focus events on input
+    const input = inputRef.current
+    if (input) {
+      input.addEventListener('focus', () => setIsKeyboardVisible(true))
+      input.addEventListener('blur', () => setIsKeyboardVisible(false))
+    }
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleResize)
+      }
+      if (input) {
+        input.removeEventListener('focus', () => setIsKeyboardVisible(true))
+        input.removeEventListener('blur', () => setIsKeyboardVisible(false))
+      }
+    }
+  }, [isChatOpen])
+
+  const scrollToBottom = () => {
+    // Use setTimeout to ensure DOM is updated
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'end'
+      })
+    }, 100)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -764,14 +818,16 @@ export default function AIAssistant() {
 
   return (
     <>
-      {/* Mobile Chat Popup Overlay */}
+      {/* Mobile & Tablet Chat Popup Overlay */}
       {isChatOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 lg:hidden"
           onClick={() => setIsChatOpen(false)}
         >
           <div 
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-4 max-h-[85vh] overflow-hidden"
+            className={`absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-4 transition-all duration-300 ${
+              isKeyboardVisible ? 'max-h-[95vh]' : 'max-h-[85vh]'
+            } flex flex-col`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
@@ -787,7 +843,7 @@ export default function AIAssistant() {
             {/* Chat Interface */}
             <div className="h-full flex flex-col">
               {/* Header with divider */}
-              <div className="p-4 border-b border-gray-200">
+              <div className="p-4 border-b border-gray-200 flex-shrink-0">
                 <div className="flex items-center space-x-3">
                   <img 
                     src="/Planet.png" 
@@ -802,7 +858,14 @@ export default function AIAssistant() {
               </div>
 
               {/* Chat Messages Area with divider */}
-              <div className="flex-1 overflow-y-auto p-4 border-b border-gray-200">
+              <div 
+                ref={messagesContainerRef}
+                className="flex-1 overflow-y-auto p-4 border-b border-gray-200 min-h-0"
+                style={{ 
+                  WebkitOverflowScrolling: 'touch',
+                  scrollBehavior: 'smooth'
+                }}
+              >
                 {conversation.length === 0 ? (
                   <div className="text-center py-8">
                     <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -900,12 +963,16 @@ export default function AIAssistant() {
                     </div>
                   </div>
                 )}
+                
+                {/* Invisible element to scroll to */}
+                <div ref={messagesEndRef} style={{ float: 'left', clear: 'both' }} />
               </div>
 
-              {/* Input Area */}
-              <div className="p-4">
+              {/* Input Area - Always visible above keyboard */}
+              <div className="p-4 flex-shrink-0 bg-white">
                 <form onSubmit={handleSubmit} className="flex items-center space-x-2">
                   <input
+                    ref={inputRef}
                     type="text"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -964,19 +1031,19 @@ export default function AIAssistant() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-dynapuff text-white mb-4">
-              Get Your Travel<br className="md:hidden" /> Budget Estimate
+            <h2 className="text-3xl lg:text-4xl font-dynapuff text-white mb-4">
+              Get Your Travel<br className="lg:hidden" /> Budget Estimate
             </h2>
-            <p className="text-lg md:text-xl text-white max-w-4xl mx-auto px-2 md:px-0">
-              Chat with our AI assistant to get personalized <br className="hidden sm:block md:hidden" />
+            <p className="text-lg lg:text-xl text-white max-w-4xl mx-auto px-2 lg:px-0">
+              Chat with our AI assistant to get personalized <br className="hidden sm:block lg:hidden" />
                budget estimates for your dream destinations. <br className="hidden sm:block" />
                Ask about costs, best times to visit, and <br className="hidden sm:block" />
                money-saving tips.
             </p>
           </div>
 
-          {/* Desktop Chat Interface - hidden on mobile */}
-          <div className="hidden md:block bg-white rounded-lg shadow-lg w-[90%] mx-auto">
+          {/* Desktop Chat Interface - hidden on mobile & tablet */}
+          <div className="hidden lg:block bg-white rounded-lg shadow-lg w-[90%] mx-auto">
             {/* Header with divider */}
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center space-x-3">
@@ -1119,8 +1186,8 @@ export default function AIAssistant() {
             </div>
           </div>
 
-          {/* Mobile Button to Open Chat - only visible on mobile */}
-          <div className="md:hidden flex justify-center mt-8">
+          {/* Mobile & Tablet Button to Open Chat - visible on mobile & tablet */}
+          <div className="lg:hidden flex justify-center mt-8">
             <button 
               onClick={() => setIsChatOpen(true)}
               className="bg-[#1C1918] text-white px-6 py-3 rounded-lg font-semibold flex items-center space-x-2"

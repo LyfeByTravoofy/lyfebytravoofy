@@ -41,29 +41,28 @@
 //   )
 // }
 
-
 export default function TailoredPackage() {
   return (
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Container with responsive alignment - removed mx-auto for desktop */}
-        <div className="max-w-2xl text-center md:text-left md:mx-0 mx-auto">
-          {/* Main heading - centered on mobile, left on desktop */}
-          <h2 className="text-4xl md:text-5xl font-dynapuff text-black mb-6">
-            Want a Package<br className="md:hidden" /> Tailored{" "}
-            <br className="hidden md:block lg:hidden" />to Vibe{" "}
-            <br className="md:hidden" />& Budget?
+        {/* Container with responsive alignment - centered on mobile & tablet, left on desktop */}
+        <div className="max-w-2xl text-center lg:text-left lg:mx-0 mx-auto">
+          {/* Main heading - centered on mobile & tablet, left on desktop */}
+          <h2 className="text-4xl lg:text-5xl font-dynapuff text-black mb-6">
+            Want a Package<br className="lg:hidden" /> Tailored{" "}
+            <br className="hidden lg:block" />to Vibe{" "}
+            <br className="lg:hidden" />& Budget?
           </h2>
           
-          {/* Subtext - centered on mobile, left on desktop */}
-          <p className="text-xl text-gray-600 mb-8 px-4 md:px-0">
+          {/* Subtext - centered on mobile & tablet, left on desktop */}
+          <p className="text-xl text-gray-600 mb-8 px-4 lg:px-0">
             Handpicked travel packages that offer <br className="hidden sm:block" /> 
             incredible value without <br className="hidden sm:block" /> 
             compromising on experience.
           </p>
           
-          {/* WhatsApp button - centered on mobile, left on desktop */}
-          <div className="flex justify-center md:justify-start">
+          {/* WhatsApp button - centered on mobile & tablet, left on desktop */}
+          <div className="flex justify-center lg:justify-start">
             <a 
               href="https://wa.me/2347014952315" // Replace with your actual WhatsApp number
               target="_blank"

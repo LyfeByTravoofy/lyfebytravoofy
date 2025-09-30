@@ -1751,7 +1751,6 @@
 //   )
 // }
 
-
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
@@ -1905,7 +1904,7 @@ export default function PackageSales() {
 
   // Always use the same card width regardless of package count
   const getCardWidth = () => {
-    return 'w-full md:w-[358px]' // Consistent size for all cases
+    return 'w-full lg:w-[358px]' // Consistent size for all cases
   }
 
   // Always center the container regardless of package count
@@ -1972,12 +1971,12 @@ export default function PackageSales() {
   return (
     <section className="py-16 bg-[#FAF69D]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header - Always visible, centered on mobile */}
-        <div className="mb-12 text-center md:text-left">
-          <h2 className="text-4xl md:text-5xl font-dynapuff text-black mb-6">
+        {/* Header - Always visible, centered on mobile & tablet */}
+        <div className="mb-12 text-center lg:text-left">
+          <h2 className="text-4xl lg:text-5xl font-dynapuff text-black mb-6">
             Packages on Sale
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto md:mx-0">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto lg:mx-0">
             Carefully curated travel packages designed to deliver exceptional experiences at the best value. Unforgettable adventures all at prices you'll love.
           </p>
         </div>
@@ -2000,7 +1999,7 @@ export default function PackageSales() {
               <button
                 onClick={scrollLeft}
                 disabled={isScrolling}
-                className="hidden md:block absolute -left-12 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 z-10 transition-all duration-300 hover:scale-110"
+                className="hidden lg:block absolute -left-12 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 z-10 transition-all duration-300 hover:scale-110"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -2111,7 +2110,7 @@ export default function PackageSales() {
               <button
                 onClick={scrollRight}
                 disabled={isScrolling}
-                className="hidden md:block absolute -right-12 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 z-10 transition-all duration-300 hover:scale-110"
+                className="hidden lg:block absolute -right-12 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 z-10 transition-all duration-300 hover:scale-110"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -2144,9 +2143,9 @@ export default function PackageSales() {
           </div>
         )}
 
-        {/* Mobile scroll indicator */}
+        {/* Mobile & Tablet scroll indicator */}
         {!loading && packages.length > 1 && shouldShowArrows() && (
-          <div className="md:hidden text-center mt-4">
+          <div className="lg:hidden text-center mt-4">
             <p className="text-sm text-gray-600">Swipe to view more packages • Auto-scroll enabled</p>
           </div>
         )}
@@ -2167,7 +2166,7 @@ export default function PackageSales() {
                 </svg>
               </button>
 
-              {/* Package Name - Different sizes for desktop vs mobile */}
+              {/* Package Name - Different sizes for desktop vs mobile & tablet */}
               <h3 className="text-4xl font-dynapuff text-black mb-6 lg:block hidden">
                 {selectedPackage.name}
               </h3>
@@ -2178,7 +2177,7 @@ export default function PackageSales() {
               <div className="flex flex-col lg:flex-row gap-8">
                 {/* Left Column - Image & Inclusions (Visible on all devices) */}
                 <div className="flex-1">
-                  {/* Package Image - Hidden on mobile */}
+                  {/* Package Image - Hidden on mobile & tablet */}
                   <div className="hidden lg:block w-full h-[243px] relative mb-6">
                     <Image
                       src={selectedPackage.image_url}
@@ -2206,7 +2205,7 @@ export default function PackageSales() {
                   </div>
                 </div>
 
-                {/* Right Column - Package Overview, Price & Booking (Hidden on mobile) */}
+                {/* Right Column - Package Overview, Price & Booking (Hidden on mobile & tablet) */}
                 <div className="hidden lg:block flex-1">
                   {/* Package Overview */}
                   {selectedPackage.description && (
@@ -2218,17 +2217,17 @@ export default function PackageSales() {
                     </div>
                   )}
 
-{/* Package Price - Added header for desktop */}
-<div className="mb-6">
-  <h4 className="text-xl font-inter font-normal text-black mb-3">Package Price</h4>
-  <div className="flex items-end space-x-3">
-    <span className="text-2xl font-inter font-bold text-black">₦{selectedPackage.price}</span>
-    <div className="flex flex-col items-start text-sm text-gray-600">
-      <span>per</span>
-      <span>person</span>
-    </div>
-  </div>
-</div>
+                  {/* Package Price - Added header for desktop */}
+                  <div className="mb-6">
+                    <h4 className="text-xl font-inter font-normal text-black mb-3">Package Price</h4>
+                    <div className="flex items-end space-x-3">
+                      <span className="text-2xl font-inter font-bold text-black">₦{selectedPackage.price}</span>
+                      <div className="flex flex-col items-start text-sm text-gray-600">
+                        <span>per</span>
+                        <span>person</span>
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Book Now Button */}
                   <a 
@@ -2255,9 +2254,9 @@ export default function PackageSales() {
                 </div>
               </div>
 
-              {/* Mobile Content - Package Overview, Inclusions, Price & Booking (Only on mobile) */}
+              {/* Mobile & Tablet Content - Package Overview, Inclusions, Price & Booking */}
               <div className="lg:hidden space-y-6 mt-6">
-                {/* Package Overview - Mobile */}
+                {/* Package Overview - Mobile & Tablet */}
                 {selectedPackage.description && (
                   <div>
                     <h4 className="text-base font-inter font-normal text-black mb-2">Package Overview</h4>
@@ -2267,7 +2266,7 @@ export default function PackageSales() {
                   </div>
                 )}
 
-                {/* Inclusions - Mobile */}
+                {/* Inclusions - Mobile & Tablet */}
                 <div>
                   <h4 className="text-base font-inter font-normal text-black mb-2">Inclusions</h4>
                   <ul className="space-y-1">
@@ -2284,7 +2283,7 @@ export default function PackageSales() {
                   </ul>
                 </div>
 
-                {/* Package Price - Mobile */}
+                {/* Package Price - Mobile & Tablet */}
                 <div>
                   <h4 className="text-base font-inter font-normal text-black mb-2">Package Price</h4>
                   <div className="flex items-end space-x-3">
@@ -2296,7 +2295,7 @@ export default function PackageSales() {
                   </div>
                 </div>
 
-                {/* Mobile Book Now Button */}
+                {/* Mobile & Tablet Book Now Button */}
                 <a 
                   href={`https://wa.me/2347014952315?text=${encodeURIComponent('Hello! I would like to book the ' + selectedPackage.name + ' package.')}`}
                   target="_blank"
