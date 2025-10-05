@@ -1817,8 +1817,9 @@ export default function PackageSales() {
     }
 
     autoScrollRef.current = setInterval(() => {
-      if (autoScrollEnabled && scrollContainerRef.current && packages.length > 2) {
+      if (autoScrollEnabled && scrollContainerRef.current && packages.length > 1) {
         const container = scrollContainerRef.current
+        const cardWidth = container.firstChild ? container.firstChild.offsetWidth + 24 : 400 // card width + gap
         const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 10
         
         if (isAtEnd) {
@@ -1826,7 +1827,7 @@ export default function PackageSales() {
           container.scrollTo({ left: 0, behavior: 'smooth' })
         } else {
           // Smooth scroll to next card
-          container.scrollBy({ left: 400, behavior: 'smooth' })
+          container.scrollBy({ left: cardWidth, behavior: 'smooth' })
         }
       }
     }, 4000) // Scroll every 4 seconds
@@ -1849,8 +1850,9 @@ export default function PackageSales() {
     if (scrollContainerRef.current && !isScrolling) {
       setIsScrolling(true)
       pauseAutoScroll()
+      const cardWidth = scrollContainerRef.current.firstChild ? scrollContainerRef.current.firstChild.offsetWidth + 24 : 400
       scrollContainerRef.current.scrollBy({ 
-        left: -400, 
+        left: -cardWidth, 
         behavior: 'smooth' 
       })
       setTimeout(() => {
@@ -1864,8 +1866,9 @@ export default function PackageSales() {
     if (scrollContainerRef.current && !isScrolling) {
       setIsScrolling(true)
       pauseAutoScroll()
+      const cardWidth = scrollContainerRef.current.firstChild ? scrollContainerRef.current.firstChild.offsetWidth + 24 : 400
       scrollContainerRef.current.scrollBy({ 
-        left: 400, 
+        left: cardWidth, 
         behavior: 'smooth' 
       })
       setTimeout(() => {
@@ -1902,14 +1905,19 @@ export default function PackageSales() {
     resumeAutoScroll()
   }
 
-  // Always use the same card width regardless of package count
+  // Get card width based on screen size - FIXED
   const getCardWidth = () => {
-    return 'w-full lg:w-[358px]' // Consistent size for all cases
+    // On mobile: full width minus padding (show one card at a time)
+    // On tablet: fixed medium size (don't stretch)
+    // On desktop: fixed large size
+    return 'w-[85vw] sm:w-[400px] lg:w-[358px] flex-shrink-0'
   }
 
-  // Always center the container regardless of package count
+  // Container alignment - FIXED
   const getContainerJustify = () => {
-    return 'justify-center'
+    // On mobile & tablet: start alignment to show one full card
+    // On desktop: center alignment
+    return 'justify-start lg:justify-center'
   }
 
   // Check if arrows should be visible
@@ -1917,7 +1925,7 @@ export default function PackageSales() {
     if (typeof window === 'undefined') return false
     
     const count = packages.length
-    if (count <= 2) return false // No arrows for 1 or 2 cards
+    if (count <= 1) return false // No arrows for 1 card
     
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current
@@ -1925,7 +1933,7 @@ export default function PackageSales() {
       return isScrollable
     }
     
-    return count > 3 // Default fallback
+    return count > 1 // Default fallback
   }
 
   // Handle touch events for smooth scrolling
@@ -2007,11 +2015,15 @@ export default function PackageSales() {
               </button>
             )}
 
-            {/* Scroll container - Always centered */}
+            {/* Scroll container - FIXED: Start alignment on mobile/tablet, center on desktop */}
             <div
               ref={scrollContainerRef}
-              className={`flex overflow-x-auto space-x-6 pb-6 scrollbar-hide justify-center`}
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              className={`flex overflow-x-auto space-x-6 pb-6 scrollbar-hide ${getContainerJustify()} snap-x snap-mandatory`}
+              style={{ 
+                scrollbarWidth: 'none', 
+                msOverflowStyle: 'none',
+                scrollPadding: '0 24px' // Add padding for better snap
+              }}
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
               onTouchEnd={onTouchEnd}
@@ -2021,8 +2033,7 @@ export default function PackageSales() {
               {packages.map((pkg) => (
                 <div 
                   key={pkg.id} 
-                  // Removed hover:scale-105 to prevent zoom effect
-                  className={`flex-shrink-0 ${getCardWidth()} bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300`}
+                  className={`${getCardWidth()} bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 snap-start`}
                 >
                   {/* Image */}
                   <div className="w-full h-[268px] relative">
@@ -2150,6 +2161,7 @@ export default function PackageSales() {
           </div>
         )}
       </div>
+
 
       {/* New Inclusions Modal - Desktop & Mobile */}
       {showInclusionsModal && selectedPackage && (
