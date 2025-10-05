@@ -1011,12 +1011,14 @@
 
 import { useState, useEffect, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { useChat } from '@/contexts/ChatContext'
 
 export default function AIAssistant() {
   const [message, setMessage] = useState('')
   const [conversation, setConversation] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-  const [isChatOpen, setIsChatOpen] = useState(false)
+  // const [isChatOpen, setIsChatOpen] = useState(false)
+  const { isChatOpen, setIsChatOpen } = useChat()
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
   
   // Refs

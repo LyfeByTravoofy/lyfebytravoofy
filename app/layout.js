@@ -34,6 +34,7 @@
 import { Metadata } from 'next'
 import { Inter, DynaPuff } from 'next/font/google'
 import './globals.css'
+import { ChatProvider } from '@/contexts/ChatContext'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -57,7 +58,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${dynaPuff.variable}`}>
       <body className="font-sans">
-        {children}
+        <ChatProvider>
+          {children}
+        </ChatProvider>
       </body>
     </html>
   )
