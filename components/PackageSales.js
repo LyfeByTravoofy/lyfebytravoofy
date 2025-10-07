@@ -2103,7 +2103,7 @@ export default function PackageSales() {
                         onClick={() => showPackageDetails(pkg)}
                         className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center space-x-2"
                       >
-                        <span>Book Now</span>
+                        <span>View</span>
                         <img 
                           src="/arrowup.png" 
                           alt="Arrow up" 
