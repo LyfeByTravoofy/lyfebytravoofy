@@ -73,7 +73,7 @@ export default function Footer() {
                   <img src="/linkedin.png" alt="LinkedIn" className="w-6 h-6" />
                 </a>
                 <a href="#" className="text-gray-600 hover:text-[#FFBF4C] transition">
-                  <img src="/linkedin.png" alt="Youtube" className="w-6 h-6" />
+                  <img src="/youtube.png" alt="Youtube" className="w-6 h-6" />
                 </a>
               </div>
             </div>
