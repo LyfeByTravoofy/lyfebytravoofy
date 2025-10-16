@@ -1751,6 +1751,601 @@
 //   )
 // }
 
+// 'use client'
+
+// import { useState, useEffect, useRef } from 'react'
+// import Image from 'next/image'
+
+// export default function PackageSales() {
+//   const [packages, setPackages] = useState([])
+//   const [loading, setLoading] = useState(true)
+//   const [selectedPackage, setSelectedPackage] = useState(null)
+//   const [showPackageModal, setShowPackageModal] = useState(false)
+//   const [showInclusionsModal, setShowInclusionsModal] = useState(false)
+//   const scrollContainerRef = useRef(null)
+//   const [isScrolling, setIsScrolling] = useState(false)
+//   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true)
+//   const autoScrollRef = useRef(null)
+
+//   useEffect(() => {
+//     fetchPackages()
+//     setupAutoScroll()
+    
+//     // Set up real-time updates (WebSocket or polling)
+//     const interval = setInterval(fetchPackages, 10000) // Check every 10 seconds
+    
+//     return () => {
+//       clearInterval(interval)
+//       if (autoScrollRef.current) {
+//         clearInterval(autoScrollRef.current)
+//       }
+//     }
+//   }, [])
+
+//   // Real-time updates effect
+//   useEffect(() => {
+//     if (packages.length > 0) {
+//       restartAutoScroll()
+//     }
+//   }, [packages])
+
+//   const fetchPackages = async () => {
+//     try {
+//       const response = await fetch('/api/packages?t=' + Date.now()) // Prevent caching
+//       if (response.ok) {
+//         const data = await response.json()
+//         // Only update if packages actually changed
+//         setPackages(prevPackages => {
+//           if (JSON.stringify(prevPackages) !== JSON.stringify(data)) {
+//             return data
+//           }
+//           return prevPackages
+//         })
+//       } else {
+//         console.error('Failed to fetch packages')
+//       }
+//     } catch (error) {
+//       console.error('Error fetching packages:', error)
+//     } finally {
+//       setLoading(false)
+//     }
+//   }
+
+//   const setupAutoScroll = () => {
+//     if (autoScrollRef.current) {
+//       clearInterval(autoScrollRef.current)
+//     }
+
+//     autoScrollRef.current = setInterval(() => {
+//       if (autoScrollEnabled && scrollContainerRef.current && packages.length > 1) {
+//         const container = scrollContainerRef.current
+//         const cardWidth = container.firstChild ? container.firstChild.offsetWidth + 24 : 400 // card width + gap
+//         const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 10
+        
+//         if (isAtEnd) {
+//           // Smooth scroll back to start
+//           container.scrollTo({ left: 0, behavior: 'smooth' })
+//         } else {
+//           // Smooth scroll to next card
+//           container.scrollBy({ left: cardWidth, behavior: 'smooth' })
+//         }
+//       }
+//     }, 4000) // Scroll every 4 seconds
+//   }
+
+//   const restartAutoScroll = () => {
+//     setupAutoScroll()
+//   }
+
+//   const pauseAutoScroll = () => {
+//     setAutoScrollEnabled(false)
+//   }
+
+//   const resumeAutoScroll = () => {
+//     setAutoScrollEnabled(true)
+//     setupAutoScroll()
+//   }
+
+//   const scrollLeft = () => {
+//     if (scrollContainerRef.current && !isScrolling) {
+//       setIsScrolling(true)
+//       pauseAutoScroll()
+//       const cardWidth = scrollContainerRef.current.firstChild ? scrollContainerRef.current.firstChild.offsetWidth + 24 : 400
+//       scrollContainerRef.current.scrollBy({ 
+//         left: -cardWidth, 
+//         behavior: 'smooth' 
+//       })
+//       setTimeout(() => {
+//         setIsScrolling(false)
+//         resumeAutoScroll()
+//       }, 500)
+//     }
+//   }
+
+//   const scrollRight = () => {
+//     if (scrollContainerRef.current && !isScrolling) {
+//       setIsScrolling(true)
+//       pauseAutoScroll()
+//       const cardWidth = scrollContainerRef.current.firstChild ? scrollContainerRef.current.firstChild.offsetWidth + 24 : 400
+//       scrollContainerRef.current.scrollBy({ 
+//         left: cardWidth, 
+//         behavior: 'smooth' 
+//       })
+//       setTimeout(() => {
+//         setIsScrolling(false)
+//         resumeAutoScroll()
+//       }, 500)
+//     }
+//   }
+
+//   const scrollToStart = () => {
+//     if (scrollContainerRef.current) {
+//       pauseAutoScroll()
+//       scrollContainerRef.current.scrollTo({ left: 0, behavior: 'smooth' })
+//       setTimeout(resumeAutoScroll, 500)
+//     }
+//   }
+
+//   const showAllInclusions = (pkg) => {
+//     setSelectedPackage(pkg)
+//     setShowInclusionsModal(true)
+//     pauseAutoScroll()
+//   }
+
+//   const showPackageDetails = (pkg) => {
+//     setSelectedPackage(pkg)
+//     setShowInclusionsModal(true)
+//     pauseAutoScroll()
+//   }
+
+//   const closeModal = () => {
+//     setShowPackageModal(false)
+//     setShowInclusionsModal(false)
+//     setSelectedPackage(null)
+//     resumeAutoScroll()
+//   }
+
+//   // Get card width based on screen size - FIXED
+//   const getCardWidth = () => {
+//     // On mobile: full width minus padding (show one card at a time)
+//     // On tablet: fixed medium size (don't stretch)
+//     // On desktop: fixed large size
+//     return 'w-[85vw] sm:w-[400px] lg:w-[358px] flex-shrink-0'
+//   }
+
+//   // Container alignment - FIXED
+//   const getContainerJustify = () => {
+//     // On mobile & tablet: start alignment to show one full card
+//     // On desktop: center alignment
+//     return 'justify-start lg:justify-center'
+//   }
+
+//   // Check if arrows should be visible
+//   const shouldShowArrows = () => {
+//     if (typeof window === 'undefined') return false
+    
+//     const count = packages.length
+//     if (count <= 1) return false // No arrows for 1 card
+    
+//     if (scrollContainerRef.current) {
+//       const container = scrollContainerRef.current
+//       const isScrollable = container.scrollWidth > container.clientWidth
+//       return isScrollable
+//     }
+    
+//     return count > 1 // Default fallback
+//   }
+
+//   // Handle touch events for smooth scrolling
+//   const [touchStart, setTouchStart] = useState(null)
+//   const [touchEnd, setTouchEnd] = useState(null)
+
+//   const minSwipeDistance = 50
+
+//   const onTouchStart = (e) => {
+//     setTouchEnd(null)
+//     setTouchStart(e.targetTouches[0].clientX)
+//     pauseAutoScroll()
+//   }
+
+//   const onTouchMove = (e) => {
+//     setTouchEnd(e.targetTouches[0].clientX)
+//   }
+
+//   const onTouchEnd = () => {
+//     if (!touchStart || !touchEnd) return
+//     const distance = touchStart - touchEnd
+//     const isLeftSwipe = distance > minSwipeDistance
+//     const isRightSwipe = distance < -minSwipeDistance
+
+//     if (isLeftSwipe && shouldShowArrows()) {
+//       scrollRight()
+//     } else if (isRightSwipe && shouldShowArrows()) {
+//       scrollLeft()
+//     }
+    
+//     setTimeout(resumeAutoScroll, 1000)
+//   }
+
+//   // Mouse events for desktop hover pause
+//   const onMouseEnter = () => {
+//     pauseAutoScroll()
+//   }
+
+//   const onMouseLeave = () => {
+//     resumeAutoScroll()
+//   }
+
+//   return (
+//     <section className="py-16 bg-[#FAF69D]">
+//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+//         {/* Header - Always visible, centered on mobile & tablet */}
+//         <div className="mb-12 text-center lg:text-left">
+//           <h2 className="text-4xl lg:text-5xl font-dynapuff text-black mb-6">
+//             Packages on Sale
+//           </h2>
+//           <p className="text-xl text-gray-600 max-w-3xl mx-auto lg:mx-0">
+//             Carefully curated travel packages designed to deliver exceptional experiences at the best value. Unforgettable adventures all at prices you'll love.
+//           </p>
+//         </div>
+
+//         {/* Loading state for packages only */}
+//         {loading && (
+//           <div className="text-center py-8">
+//             <div className="flex justify-center">
+//               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+//             </div>
+//             <p className="mt-4 text-gray-600">Loading packages...</p>
+//           </div>
+//         )}
+
+//         {/* Packages with scroll arrows - Only show when not loading */}
+//         {!loading && (
+//           <div className="relative">
+//             {/* Left arrow - conditional rendering */}
+//             {shouldShowArrows() && (
+//               <button
+//                 onClick={scrollLeft}
+//                 disabled={isScrolling}
+//                 className="hidden lg:block absolute -left-12 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 z-10 transition-all duration-300 hover:scale-110"
+//               >
+//                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+//                 </svg>
+//               </button>
+//             )}
+
+//             {/* Scroll container - FIXED: Start alignment on mobile/tablet, center on desktop */}
+//             <div
+//               ref={scrollContainerRef}
+//               className={`flex overflow-x-auto space-x-6 pb-6 scrollbar-hide ${getContainerJustify()} snap-x snap-mandatory`}
+//               style={{ 
+//                 scrollbarWidth: 'none', 
+//                 msOverflowStyle: 'none',
+//                 scrollPadding: '0 24px' // Add padding for better snap
+//               }}
+//               onTouchStart={onTouchStart}
+//               onTouchMove={onTouchMove}
+//               onTouchEnd={onTouchEnd}
+//               onMouseEnter={onMouseEnter}
+//               onMouseLeave={onMouseLeave}
+//             >
+//               {packages.map((pkg) => (
+//                 <div 
+//                   key={pkg.id} 
+//                   className={`${getCardWidth()} bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 snap-start`}
+//                 >
+//                   {/* Image */}
+//                   <div className="w-full h-[268px] relative">
+//                     <Image
+//                       src={pkg.image_url}
+//                       alt={pkg.name}
+//                       fill
+//                       className="object-cover rounded-t-2xl"
+//                     />
+//                   </div>
+
+//                   {/* Content */}
+//                   <div className="p-6 flex flex-col h-[calc(100%-268px)]">
+//                     <div className="flex-1">
+//                       {/* Package Name */}
+//                       <h3 className="text-xl font-semibold text-black mb-3">{pkg.name}</h3>
+                      
+//                       {/* Location - Aligned to left under package name */}
+//                       <div className="flex items-center space-x-1 mb-4">
+//                         <div className="w-4 h-4 bg-gray-300 rounded-full flex items-center justify-center">
+//                           <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+//                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+//                           </svg>
+//                         </div>
+//                         <span className="text-sm text-gray-600">{pkg.location}</span>
+//                       </div>
+
+//                       {/* Price */}
+//                       <div className="mb-4">
+//                         <p className="text-xl font-semibold text-black">₦{pkg.price}</p>
+//                         <p className="text-sm text-gray-600">per person</p>
+//                       </div>
+
+//                       {/* Inclusions */}
+//                       <div className="mb-4">
+//                         <h4 className="text-sm font-medium text-black mb-2">Inclusions:</h4>
+//                         <ul className="space-y-1">
+//                           {pkg.inclusions.slice(0, 3).map((inclusion, index) => (
+//                             <li key={index} className="flex items-center space-x-2">
+//                               {/* Gray checkmark instead of green */}
+//                               <div className="w-4 h-4 bg-gray-100 rounded flex items-center justify-center">
+//                                 <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+//                                 </svg>
+//                               </div>
+//                               <span className="text-sm text-gray-700">{inclusion}</span>
+//                             </li>
+//                           ))}
+//                           {pkg.inclusions.length > 3 && (
+//                             <li className="text-sm text-gray-600">
+//                               <button 
+//                                 onClick={() => showAllInclusions(pkg)}
+//                                 className="text-gray-600 hover:text-gray-800"
+//                               >
+//                                 +{pkg.inclusions.length - 3} more inclusions
+//                               </button>
+//                             </li>
+//                           )}
+//                         </ul>
+//                       </div>
+//                     </div>
+
+//                     {/* Book Now button - Fixed at bottom */}
+//                     <div className="mt-auto pt-4">
+//                       <button 
+//                         onClick={() => showPackageDetails(pkg)}
+//                         className="w-full bg-black text-white py-3 rounded-lg font-semibold hover:bg-gray-800 transition flex items-center justify-center space-x-2"
+//                       >
+//                         <span>View</span>
+//                         <img 
+//                           src="/arrowup.png" 
+//                           alt="Arrow up" 
+//                           className="w-5 h-5"
+//                         />
+//                       </button>
+//                     </div>
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+
+//             {/* Right arrow - conditional rendering */}
+//             {shouldShowArrows() && (
+//               <button
+//                 onClick={scrollRight}
+//                 disabled={isScrolling}
+//                 className="hidden lg:block absolute -right-12 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100 z-10 transition-all duration-300 hover:scale-110"
+//               >
+//                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+//                 </svg>
+//               </button>
+//             )}
+
+//             {/* Auto-scroll restart button (visible during debugging) */}
+//             {process.env.NODE_ENV === 'development' && (
+//               <button
+//                 onClick={restartAutoScroll}
+//                 className="absolute top-0 right-0 bg-transparent text-transparent px-2 py-1 rounded text-xs hover:bg-gray-200 hover:text-gray-600 transition-colors"
+//               >
+//                 {/* Restart Scroll */}
+//               </button>
+//             )}
+//           </div>
+//         )}
+
+//         {/* Empty state */}
+//         {!loading && packages.length === 0 && (
+//           <div className="text-center py-12">
+//             <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+//               <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+//               </svg>
+//             </div>
+//             <h3 className="text-lg font-medium text-gray-900 mb-2">No packages available</h3>
+//             <p className="text-gray-500">Check back later</p>
+//           </div>
+//         )}
+
+//         {/* Mobile & Tablet scroll indicator */}
+//         {!loading && packages.length > 1 && shouldShowArrows() && (
+//           <div className="lg:hidden text-center mt-4">
+//             <p className="text-sm text-gray-600">Swipe to view more packages • Auto-scroll enabled</p>
+//           </div>
+//         )}
+//       </div>
+
+
+//       {/* New Inclusions Modal - Desktop & Mobile */}
+//       {showInclusionsModal && selectedPackage && (
+//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+//           <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+//             <div className="relative p-6">
+//               {/* Close button */}
+//               <button
+//                 onClick={closeModal}
+//                 className="absolute top-6 right-6 z-10 bg-[#D1D0D0] rounded-full p-2 hover:bg-gray-300 transition-colors"
+//               >
+//                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+//                 </svg>
+//               </button>
+
+//               {/* Package Name - Different sizes for desktop vs mobile & tablet */}
+//               <h3 className="text-4xl font-dynapuff text-black mb-6 lg:block hidden">
+//                 {selectedPackage.name}
+//               </h3>
+//               <h3 className="text-2xl font-dynapuff text-black mb-6 lg:hidden block">
+//                 {selectedPackage.name}
+//               </h3>
+
+//               <div className="flex flex-col lg:flex-row gap-8">
+//                 {/* Left Column - Image & Inclusions (Visible on all devices) */}
+//                 <div className="flex-1">
+//                   {/* Package Image - Hidden on mobile & tablet */}
+//                   <div className="hidden lg:block w-full h-[243px] relative mb-6">
+//                     <Image
+//                       src={selectedPackage.image_url}
+//                       alt={selectedPackage.name}
+//                       fill
+//                       className="object-cover rounded-lg"
+//                     />
+//                   </div>
+
+//                   {/* Inclusions - Reduced line height */}
+//                   <div className="hidden lg:block">
+//                     <h4 className="text-xl font-inter font-normal text-black mb-4">Inclusions</h4>
+//                     <ul className="space-y-2">
+//                       {selectedPackage.inclusions.map((inclusion, index) => (
+//                         <li key={index} className="flex items-start space-x-3">
+//                           <div className="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+//                             <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+//                             </svg>
+//                           </div>
+//                           <span className="text-base font-inter font-light text-gray-700">{inclusion}</span>
+//                         </li>
+//                       ))}
+//                     </ul>
+//                   </div>
+//                 </div>
+
+//                 {/* Right Column - Package Overview, Price & Booking (Hidden on mobile & tablet) */}
+//                 <div className="hidden lg:block flex-1">
+//                   {/* Package Overview */}
+//                   {selectedPackage.description && (
+//                     <div className="mb-6">
+//                       <h4 className="text-xl font-inter font-normal text-black mb-3">Package Overview</h4>
+//                       <p className="text-gray-700 leading-relaxed">
+//                         {selectedPackage.description}
+//                       </p>
+//                     </div>
+//                   )}
+
+//                   {/* Package Price - Added header for desktop */}
+//                   <div className="mb-6">
+//                     <h4 className="text-xl font-inter font-normal text-black mb-3">Package Price</h4>
+//                     <div className="flex items-end space-x-3">
+//                       <span className="text-2xl font-inter font-bold text-black">₦{selectedPackage.price}</span>
+//                       <div className="flex flex-col items-start text-sm text-gray-600">
+//                         <span>per</span>
+//                         <span>person</span>
+//                       </div>
+//                     </div>
+//                   </div>
+
+//                   {/* Book Now Button */}
+//                   <a 
+//                     href={`https://wa.me/2347014952315?text=${encodeURIComponent('Hello! I would like to book the ' + selectedPackage.name + ' package.')}`}
+//                     target="_blank"
+//                     rel="noopener noreferrer"
+//                     className="w-full bg-[#1DBF73] text-white py-3 rounded-lg font-semibold hover:bg-[#17a564] transition flex items-center justify-center space-x-2 mb-4"
+//                   >
+//                     <span>Book Now</span>
+//                     <img 
+//                       src="/arrowup.png" 
+//                       alt="Arrow up" 
+//                       className="w-5 h-5"
+//                     />
+//                   </a>
+
+//                   {/* WhatsApp Info */}
+//                   <div className="text-sm text-gray-600 space-y-1">
+//                     <p>Click "Book Now" to start a WhatsApp</p>
+//                     <p>conversation with our travel experts.</p>
+//                     <p>We'll help you customize your perfect</p>
+//                     <p>getaway!</p>
+//                   </div>
+//                 </div>
+//               </div>
+
+//               {/* Mobile & Tablet Content - Package Overview, Inclusions, Price & Booking */}
+//               <div className="lg:hidden space-y-6 mt-6">
+//                 {/* Package Overview - Mobile & Tablet */}
+//                 {selectedPackage.description && (
+//                   <div>
+//                     <h4 className="text-base font-inter font-normal text-black mb-2">Package Overview</h4>
+//                     <p className="text-xs text-gray-700 leading-relaxed">
+//                       {selectedPackage.description}
+//                     </p>
+//                   </div>
+//                 )}
+
+//                 {/* Inclusions - Mobile & Tablet */}
+//                 <div>
+//                   <h4 className="text-base font-inter font-normal text-black mb-2">Inclusions</h4>
+//                   <ul className="space-y-1">
+//                     {selectedPackage.inclusions.map((inclusion, index) => (
+//                       <li key={index} className="flex items-start space-x-2">
+//                         <div className="w-4 h-4 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+//                           <svg className="w-2.5 h-2.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+//                           </svg>
+//                         </div>
+//                         <span className="text-xs font-inter font-light text-gray-700">{inclusion}</span>
+//                       </li>
+//                     ))}
+//                   </ul>
+//                 </div>
+
+//                 {/* Package Price - Mobile & Tablet */}
+//                 <div>
+//                   <h4 className="text-base font-inter font-normal text-black mb-2">Package Price</h4>
+//                   <div className="flex items-end space-x-3">
+//                     <span className="text-xl font-inter font-bold text-black">₦{selectedPackage.price}</span>
+//                     <div className="flex flex-col items-start text-xs text-gray-600">
+//                       <span>per</span>
+//                       <span>person</span>
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 {/* Mobile & Tablet Book Now Button */}
+//                 <a 
+//                   href={`https://wa.me/2347014952315?text=${encodeURIComponent('Hello! I would like to book the ' + selectedPackage.name + ' package.')}`}
+//                   target="_blank"
+//                   rel="noopener noreferrer"
+//                   className="w-full bg-[#1DBF73] text-white py-3 rounded-lg font-semibold hover:bg-[#17a564] transition flex items-center justify-center space-x-2"
+//                 >
+//                   <span>Book Now</span>
+//                   <img 
+//                     src="/arrowup.png" 
+//                     alt="Arrow up" 
+//                     className="w-5 h-5"
+//                   />
+//                 </a>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Custom CSS to hide scrollbar */}
+//       <style jsx>{`
+//         .scrollbar-hide::-webkit-scrollbar {
+//           display: none;
+//         }
+        
+//         /* Smooth scrolling animation */
+//         .scroll-container {
+//           scroll-behavior: smooth;
+//           transition: scroll-left 0.5s ease-in-out;
+//         }
+//       `}</style>
+//     </section>
+//   )
+// }
+
+
+
+
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
@@ -1771,8 +2366,7 @@ export default function PackageSales() {
     fetchPackages()
     setupAutoScroll()
     
-    // Set up real-time updates (WebSocket or polling)
-    const interval = setInterval(fetchPackages, 10000) // Check every 10 seconds
+    const interval = setInterval(fetchPackages, 10000)
     
     return () => {
       clearInterval(interval)
@@ -1782,7 +2376,6 @@ export default function PackageSales() {
     }
   }, [])
 
-  // Real-time updates effect
   useEffect(() => {
     if (packages.length > 0) {
       restartAutoScroll()
@@ -1791,10 +2384,9 @@ export default function PackageSales() {
 
   const fetchPackages = async () => {
     try {
-      const response = await fetch('/api/packages?t=' + Date.now()) // Prevent caching
+      const response = await fetch('/api/packages?t=' + Date.now())
       if (response.ok) {
         const data = await response.json()
-        // Only update if packages actually changed
         setPackages(prevPackages => {
           if (JSON.stringify(prevPackages) !== JSON.stringify(data)) {
             return data
@@ -1811,6 +2403,13 @@ export default function PackageSales() {
     }
   }
 
+  const getCardWidth = () => {
+    if (typeof window === 'undefined') return 358
+    if (window.innerWidth >= 1024) return 358 // lg
+    if (window.innerWidth >= 640) return 400 // sm
+    return window.innerWidth * 0.85 // mobile
+  }
+
   const setupAutoScroll = () => {
     if (autoScrollRef.current) {
       clearInterval(autoScrollRef.current)
@@ -1819,18 +2418,32 @@ export default function PackageSales() {
     autoScrollRef.current = setInterval(() => {
       if (autoScrollEnabled && scrollContainerRef.current && packages.length > 1) {
         const container = scrollContainerRef.current
-        const cardWidth = container.firstChild ? container.firstChild.offsetWidth + 24 : 400 // card width + gap
-        const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 10
+        const cardWidth = getCardWidth() + 24 // card width + gap
+        const scrollPosition = container.scrollLeft
+        const maxScroll = container.scrollWidth - container.clientWidth
+        
+        // Check if we're at the end (with tolerance)
+        const isAtEnd = scrollPosition >= maxScroll - 50
         
         if (isAtEnd) {
-          // Smooth scroll back to start
-          container.scrollTo({ left: 0, behavior: 'smooth' })
+          // Scroll back to start with proper alignment
+          container.scrollTo({ 
+            left: 0, 
+            behavior: 'smooth' 
+          })
         } else {
-          // Smooth scroll to next card
-          container.scrollBy({ left: cardWidth, behavior: 'smooth' })
+          // Calculate exact next position
+          const visibleCards = Math.floor(container.clientWidth / cardWidth)
+          const currentIndex = Math.floor((scrollPosition + 10) / cardWidth) // Add small tolerance
+          const nextPosition = (currentIndex + 1) * cardWidth
+          
+          container.scrollTo({ 
+            left: Math.min(nextPosition, maxScroll), 
+            behavior: 'smooth' 
+          })
         }
       }
-    }, 4000) // Scroll every 4 seconds
+    }, 4000)
   }
 
   const restartAutoScroll = () => {
@@ -1846,44 +2459,58 @@ export default function PackageSales() {
     setupAutoScroll()
   }
 
-  const scrollLeft = () => {
+  const scrollToCard = (direction) => {
     if (scrollContainerRef.current && !isScrolling) {
       setIsScrolling(true)
       pauseAutoScroll()
-      const cardWidth = scrollContainerRef.current.firstChild ? scrollContainerRef.current.firstChild.offsetWidth + 24 : 400
-      scrollContainerRef.current.scrollBy({ 
-        left: -cardWidth, 
+      
+      const container = scrollContainerRef.current
+      const cardWidth = getCardWidth() + 24
+      const scrollPosition = container.scrollLeft
+      const maxScroll = container.scrollWidth - container.clientWidth
+      
+      let targetScrollPosition
+      
+      if (direction === 'left') {
+        // Scroll to previous card
+        const currentIndex = Math.floor((scrollPosition + 10) / cardWidth)
+        targetScrollPosition = Math.max(0, (currentIndex - 1) * cardWidth)
+        
+        // If we're at the start and click left, go to the end
+        if (scrollPosition <= 10 && currentIndex === 0) {
+          targetScrollPosition = maxScroll
+        }
+      } else {
+        // Scroll to next card
+        const currentIndex = Math.floor((scrollPosition + 10) / cardWidth)
+        const nextPosition = (currentIndex + 1) * cardWidth
+        
+        // If at end, scroll back to start
+        if (scrollPosition >= maxScroll - 10) {
+          targetScrollPosition = 0
+        } else {
+          targetScrollPosition = Math.min(nextPosition, maxScroll)
+        }
+      }
+      
+      container.scrollTo({ 
+        left: targetScrollPosition, 
         behavior: 'smooth' 
       })
+      
       setTimeout(() => {
         setIsScrolling(false)
         resumeAutoScroll()
       }, 500)
     }
+  }
+
+  const scrollLeft = () => {
+    scrollToCard('left')
   }
 
   const scrollRight = () => {
-    if (scrollContainerRef.current && !isScrolling) {
-      setIsScrolling(true)
-      pauseAutoScroll()
-      const cardWidth = scrollContainerRef.current.firstChild ? scrollContainerRef.current.firstChild.offsetWidth + 24 : 400
-      scrollContainerRef.current.scrollBy({ 
-        left: cardWidth, 
-        behavior: 'smooth' 
-      })
-      setTimeout(() => {
-        setIsScrolling(false)
-        resumeAutoScroll()
-      }, 500)
-    }
-  }
-
-  const scrollToStart = () => {
-    if (scrollContainerRef.current) {
-      pauseAutoScroll()
-      scrollContainerRef.current.scrollTo({ left: 0, behavior: 'smooth' })
-      setTimeout(resumeAutoScroll, 500)
-    }
+    scrollToCard('right')
   }
 
   const showAllInclusions = (pkg) => {
@@ -1905,19 +2532,9 @@ export default function PackageSales() {
     resumeAutoScroll()
   }
 
-  // Get card width based on screen size - FIXED
-  const getCardWidth = () => {
-    // On mobile: full width minus padding (show one card at a time)
-    // On tablet: fixed medium size (don't stretch)
-    // On desktop: fixed large size
+  // Get card width class based on screen size
+  const getCardWidthClass = () => {
     return 'w-[85vw] sm:w-[400px] lg:w-[358px] flex-shrink-0'
-  }
-
-  // Container alignment - FIXED
-  const getContainerJustify = () => {
-    // On mobile & tablet: start alignment to show one full card
-    // On desktop: center alignment
-    return 'justify-start lg:justify-center'
   }
 
   // Check if arrows should be visible
@@ -1925,7 +2542,7 @@ export default function PackageSales() {
     if (typeof window === 'undefined') return false
     
     const count = packages.length
-    if (count <= 1) return false // No arrows for 1 card
+    if (count <= 1) return false
     
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current
@@ -1933,7 +2550,7 @@ export default function PackageSales() {
       return isScrollable
     }
     
-    return count > 1 // Default fallback
+    return count > 1
   }
 
   // Handle touch events for smooth scrolling
@@ -1959,9 +2576,9 @@ export default function PackageSales() {
     const isRightSwipe = distance < -minSwipeDistance
 
     if (isLeftSwipe && shouldShowArrows()) {
-      scrollRight()
+      scrollToCard('right')
     } else if (isRightSwipe && shouldShowArrows()) {
-      scrollLeft()
+      scrollToCard('left')
     }
     
     setTimeout(resumeAutoScroll, 1000)
@@ -1979,7 +2596,7 @@ export default function PackageSales() {
   return (
     <section className="py-16 bg-[#FAF69D]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header - Always visible, centered on mobile & tablet */}
+        {/* Header */}
         <div className="mb-12 text-center lg:text-left">
           <h2 className="text-4xl lg:text-5xl font-dynapuff text-black mb-6">
             Packages on Sale
@@ -1989,7 +2606,7 @@ export default function PackageSales() {
           </p>
         </div>
 
-        {/* Loading state for packages only */}
+        {/* Loading state */}
         {loading && (
           <div className="text-center py-8">
             <div className="flex justify-center">
@@ -1999,10 +2616,10 @@ export default function PackageSales() {
           </div>
         )}
 
-        {/* Packages with scroll arrows - Only show when not loading */}
+        {/* Packages with scroll arrows */}
         {!loading && (
           <div className="relative">
-            {/* Left arrow - conditional rendering */}
+            {/* Left arrow */}
             {shouldShowArrows() && (
               <button
                 onClick={scrollLeft}
@@ -2015,14 +2632,14 @@ export default function PackageSales() {
               </button>
             )}
 
-            {/* Scroll container - FIXED: Start alignment on mobile/tablet, center on desktop */}
+            {/* Scroll container - FIXED: Always use start alignment for consistent scrolling */}
             <div
               ref={scrollContainerRef}
-              className={`flex overflow-x-auto space-x-6 pb-6 scrollbar-hide ${getContainerJustify()} snap-x snap-mandatory`}
+              className={`flex overflow-x-auto space-x-6 pb-6 scrollbar-hide justify-start snap-x snap-mandatory`}
               style={{ 
                 scrollbarWidth: 'none', 
                 msOverflowStyle: 'none',
-                scrollPadding: '0 24px' // Add padding for better snap
+                scrollPadding: '0 24px'
               }}
               onTouchStart={onTouchStart}
               onTouchMove={onTouchMove}
@@ -2033,7 +2650,7 @@ export default function PackageSales() {
               {packages.map((pkg) => (
                 <div 
                   key={pkg.id} 
-                  className={`${getCardWidth()} bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 snap-start`}
+                  className={`${getCardWidthClass()} bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 snap-start`}
                 >
                   {/* Image */}
                   <div className="w-full h-[268px] relative">
@@ -2048,10 +2665,8 @@ export default function PackageSales() {
                   {/* Content */}
                   <div className="p-6 flex flex-col h-[calc(100%-268px)]">
                     <div className="flex-1">
-                      {/* Package Name */}
                       <h3 className="text-xl font-semibold text-black mb-3">{pkg.name}</h3>
                       
-                      {/* Location - Aligned to left under package name */}
                       <div className="flex items-center space-x-1 mb-4">
                         <div className="w-4 h-4 bg-gray-300 rounded-full flex items-center justify-center">
                           <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2062,19 +2677,16 @@ export default function PackageSales() {
                         <span className="text-sm text-gray-600">{pkg.location}</span>
                       </div>
 
-                      {/* Price */}
                       <div className="mb-4">
                         <p className="text-xl font-semibold text-black">₦{pkg.price}</p>
                         <p className="text-sm text-gray-600">per person</p>
                       </div>
 
-                      {/* Inclusions */}
                       <div className="mb-4">
                         <h4 className="text-sm font-medium text-black mb-2">Inclusions:</h4>
                         <ul className="space-y-1">
                           {pkg.inclusions.slice(0, 3).map((inclusion, index) => (
                             <li key={index} className="flex items-center space-x-2">
-                              {/* Gray checkmark instead of green */}
                               <div className="w-4 h-4 bg-gray-100 rounded flex items-center justify-center">
                                 <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -2097,7 +2709,6 @@ export default function PackageSales() {
                       </div>
                     </div>
 
-                    {/* Book Now button - Fixed at bottom */}
                     <div className="mt-auto pt-4">
                       <button 
                         onClick={() => showPackageDetails(pkg)}
@@ -2116,7 +2727,7 @@ export default function PackageSales() {
               ))}
             </div>
 
-            {/* Right arrow - conditional rendering */}
+            {/* Right arrow */}
             {shouldShowArrows() && (
               <button
                 onClick={scrollRight}
@@ -2126,16 +2737,6 @@ export default function PackageSales() {
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-              </button>
-            )}
-
-            {/* Auto-scroll restart button (visible during debugging) */}
-            {process.env.NODE_ENV === 'development' && (
-              <button
-                onClick={restartAutoScroll}
-                className="absolute top-0 right-0 bg-transparent text-transparent px-2 py-1 rounded text-xs hover:bg-gray-200 hover:text-gray-600 transition-colors"
-              >
-                {/* Restart Scroll */}
               </button>
             )}
           </div>
@@ -2162,8 +2763,7 @@ export default function PackageSales() {
         )}
       </div>
 
-
-      {/* New Inclusions Modal - Desktop & Mobile */}
+      {/* Modal code remains the same */}
       {showInclusionsModal && selectedPackage && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -2178,7 +2778,6 @@ export default function PackageSales() {
                 </svg>
               </button>
 
-              {/* Package Name - Different sizes for desktop vs mobile & tablet */}
               <h3 className="text-4xl font-dynapuff text-black mb-6 lg:block hidden">
                 {selectedPackage.name}
               </h3>
@@ -2187,9 +2786,7 @@ export default function PackageSales() {
               </h3>
 
               <div className="flex flex-col lg:flex-row gap-8">
-                {/* Left Column - Image & Inclusions (Visible on all devices) */}
                 <div className="flex-1">
-                  {/* Package Image - Hidden on mobile & tablet */}
                   <div className="hidden lg:block w-full h-[243px] relative mb-6">
                     <Image
                       src={selectedPackage.image_url}
@@ -2199,7 +2796,6 @@ export default function PackageSales() {
                     />
                   </div>
 
-                  {/* Inclusions - Reduced line height */}
                   <div className="hidden lg:block">
                     <h4 className="text-xl font-inter font-normal text-black mb-4">Inclusions</h4>
                     <ul className="space-y-2">
@@ -2217,9 +2813,7 @@ export default function PackageSales() {
                   </div>
                 </div>
 
-                {/* Right Column - Package Overview, Price & Booking (Hidden on mobile & tablet) */}
                 <div className="hidden lg:block flex-1">
-                  {/* Package Overview */}
                   {selectedPackage.description && (
                     <div className="mb-6">
                       <h4 className="text-xl font-inter font-normal text-black mb-3">Package Overview</h4>
@@ -2229,7 +2823,6 @@ export default function PackageSales() {
                     </div>
                   )}
 
-                  {/* Package Price - Added header for desktop */}
                   <div className="mb-6">
                     <h4 className="text-xl font-inter font-normal text-black mb-3">Package Price</h4>
                     <div className="flex items-end space-x-3">
@@ -2241,7 +2834,6 @@ export default function PackageSales() {
                     </div>
                   </div>
 
-                  {/* Book Now Button */}
                   <a 
                     href={`https://wa.me/2347014952315?text=${encodeURIComponent('Hello! I would like to book the ' + selectedPackage.name + ' package.')}`}
                     target="_blank"
@@ -2256,7 +2848,6 @@ export default function PackageSales() {
                     />
                   </a>
 
-                  {/* WhatsApp Info */}
                   <div className="text-sm text-gray-600 space-y-1">
                     <p>Click "Book Now" to start a WhatsApp</p>
                     <p>conversation with our travel experts.</p>
@@ -2266,9 +2857,7 @@ export default function PackageSales() {
                 </div>
               </div>
 
-              {/* Mobile & Tablet Content - Package Overview, Inclusions, Price & Booking */}
               <div className="lg:hidden space-y-6 mt-6">
-                {/* Package Overview - Mobile & Tablet */}
                 {selectedPackage.description && (
                   <div>
                     <h4 className="text-base font-inter font-normal text-black mb-2">Package Overview</h4>
@@ -2278,7 +2867,6 @@ export default function PackageSales() {
                   </div>
                 )}
 
-                {/* Inclusions - Mobile & Tablet */}
                 <div>
                   <h4 className="text-base font-inter font-normal text-black mb-2">Inclusions</h4>
                   <ul className="space-y-1">
@@ -2295,7 +2883,6 @@ export default function PackageSales() {
                   </ul>
                 </div>
 
-                {/* Package Price - Mobile & Tablet */}
                 <div>
                   <h4 className="text-base font-inter font-normal text-black mb-2">Package Price</h4>
                   <div className="flex items-end space-x-3">
@@ -2307,7 +2894,6 @@ export default function PackageSales() {
                   </div>
                 </div>
 
-                {/* Mobile & Tablet Book Now Button */}
                 <a 
                   href={`https://wa.me/2347014952315?text=${encodeURIComponent('Hello! I would like to book the ' + selectedPackage.name + ' package.')}`}
                   target="_blank"
@@ -2327,16 +2913,9 @@ export default function PackageSales() {
         </div>
       )}
 
-      {/* Custom CSS to hide scrollbar */}
       <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
-        }
-        
-        /* Smooth scrolling animation */
-        .scroll-container {
-          scroll-behavior: smooth;
-          transition: scroll-left 0.5s ease-in-out;
         }
       `}</style>
     </section>
